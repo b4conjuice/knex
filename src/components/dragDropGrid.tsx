@@ -66,12 +66,11 @@ export default function useDragDropGrid<T extends DragDropGridItemType>({
     const { active, over } = event
 
     if (active.id !== over?.id) {
-      setItems(newItems => {
-        const oldIndex = newItems.indexOf(active.id)
-        const newIndex = newItems.indexOf(over.id)
-
-        return arrayMove(newItems, oldIndex, newIndex)
-      })
+      // setItems(newItems => {
+      //   const oldIndex = newItems.indexOf(active.id)
+      //   const newIndex = newItems.indexOf(over.id)
+      //   return arrayMove(newItems, oldIndex, newIndex)
+      // })
     }
   }
 
