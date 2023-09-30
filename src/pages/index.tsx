@@ -23,6 +23,25 @@ import Layout from '@/components/layout'
 import Modal from '@/components/modal'
 import useLocalStorage from '@/lib/useLocalStorage'
 
+const defaultWords = [
+  'central',
+  'critical',
+  'key',
+  'vital',
+  'henry',
+  'tired',
+  'paper',
+  'tempo',
+  'assignment',
+  'rock',
+  'jennifer',
+  'defeat',
+  'glass',
+  'kate',
+  'plastic',
+  'metal',
+]
+
 function SortableItem({
   id,
   children,
@@ -48,7 +67,7 @@ function SortableItem({
 export default function Home() {
   const [savedWords, setSavedWords] = useLocalStorage<string[]>(
     'knex-savedWords',
-    []
+    [...defaultWords]
   )
   const [showModal, setShowModal] = useState(false)
   const items = savedWords || []
