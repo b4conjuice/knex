@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Main, Modal, Title } from '@bacondotbuild/ui'
+import { Main, Title } from '@bacondotbuild/ui'
 import { Cog6ToothIcon } from '@heroicons/react/24/solid'
 import {
   DndContext,
@@ -20,6 +20,7 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 
 import Layout from '@/components/layout'
+import Modal from '@/components/modal'
 import useLocalStorage from '@/lib/useLocalStorage'
 
 function SortableItem({
@@ -121,7 +122,7 @@ export default function Home() {
         </div> */}
         <Modal isOpen={showModal} setIsOpen={setShowModal} title='settings'>
           <textarea
-            className='bg-cobalt h-full w-full flex-grow'
+            className='bg-cobalt w-full flex-grow p-4'
             value={(savedWords || []).join('\n')}
             onChange={e => setSavedWords(e.target.value.split('\n'))}
           />
