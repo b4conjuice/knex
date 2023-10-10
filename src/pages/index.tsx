@@ -73,6 +73,20 @@ function SortableItem({
 
 const MAX_SELECTED_WORDS = 4
 
+interface Submission {
+  word: string
+  color: string
+}
+
+type Map = Record<string, string | undefined>
+
+const colorToBackgroundColorClass: Map = {
+  yellow: 'bg-yellow-500',
+  green: 'bg-green-600',
+  blue: 'bg-blue-700',
+  purple: 'bg-purple-800',
+}
+
 export default function Home() {
   const [savedWords, setSavedWords] = useLocalStorage<string[]>(
     'knex-savedWords',
@@ -82,7 +96,10 @@ export default function Home() {
     'knex-selectedWords',
     []
   )
-  const [history, setHistory] = useLocalStorage<string[][]>('knex-history', [])
+  const [history, setHistory] = useLocalStorage<Submission[][]>(
+    'knex-history',
+    []
+  )
   const selectWord = (selectedWord: string) => {
     const selectedWordIndex = selectedWords.findIndex(s => s === selectedWord)
     if (selectedWordIndex > -1) {
@@ -95,8 +112,31 @@ export default function Home() {
   }
   const [showSettingsModal, setShowSettingsModal] = useState(false)
   const [showDeleteHistoryModal, setShowDeleteHistoryModal] = useState(false)
+  const [showSetColorModal, setShowSetColorModal] = useState(false)
   const [isSortMode, setIsSortMode] = useState(true)
+  const [selectedSubmissionWordPosition, setSelectedSubmissionWordPosition] =
+    useState<[number, number] | null>(null)
   const items = savedWords || []
+  const selectedSubmissionIndex = selectedSubmissionWordPosition
+    ? selectedSubmissionWordPosition[0]
+    : null
+  const selectedSubmissionWordIndex = selectedSubmissionWordPosition
+    ? selectedSubmissionWordPosition[1]
+    : null
+  const selectedSubmission =
+    selectedSubmissionIndex !== null &&
+    selectedSubmissionWordIndex !== null &&
+    history !== undefined &&
+    history?.length > 0 &&
+    history[selectedSubmissionIndex] !== undefined
+      ? history[selectedSubmissionIndex]
+      : null
+  const selectedSubmissionWord =
+    selectedSubmission !== null &&
+    selectedSubmission !== undefined &&
+    typeof selectedSubmissionWordIndex === 'number'
+      ? selectedSubmission[selectedSubmissionWordIndex]
+      : null
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -244,12 +284,25 @@ export default function Home() {
                   className='grid w-full grid-cols-4 gap-4'
                 >
                   {submission.map((word, index) => (
-                    <div
+                    <button
                       key={index}
-                      className='max-w-xs flex-col gap-4 rounded-xl bg-white/10 px-2 py-4 text-center text-white'
+                      className={classNames(
+                        word.color
+                          ? colorToBackgroundColorClass[word.color]
+                          : 'bg-white/10',
+                        'rounded-xl px-2 py-4 text-center text-white'
+                      )}
+                      type='button'
+                      onClick={() => {
+                        setSelectedSubmissionWordPosition([
+                          submissionIndex,
+                          index,
+                        ])
+                        setShowSetColorModal(true)
+                      }}
                     >
-                      {word}
-                    </div>
+                      {word.word}
+                    </button>
                   ))}
                 </ul>
               ))}
@@ -273,7 +326,10 @@ export default function Home() {
             disabled={selectedWords?.length !== MAX_SELECTED_WORDS}
             className='disabled:pointer-events-none disabled:opacity-25'
             onClick={() => {
-              setHistory([selectedWords, ...history])
+              setHistory([
+                selectedWords.map(word => ({ word, color: '' })),
+                ...history,
+              ])
               setSelectedWords([])
             }}
           >
@@ -306,6 +362,54 @@ export default function Home() {
           >
             <TrashIcon className='h-6 w-full' />
           </Button>
+        </Modal>
+        <Modal
+          isOpen={showSetColorModal}
+          setIsOpen={setShowSetColorModal}
+          title={`set color of ${selectedSubmissionWord?.word}`}
+          isFullScreen={false}
+        >
+          <ul className='grid w-full grid-cols-4 gap-4'>
+            {Object.entries(colorToBackgroundColorClass).map(
+              ([color, backgroundColorClass]) => (
+                <button
+                  key={color}
+                  className={classNames(
+                    backgroundColorClass,
+                    'gap-4 rounded-xl bg-white/10 px-2 py-4 text-center text-white'
+                  )}
+                  onClick={() => {
+                    if (
+                      history?.length > 0 &&
+                      typeof selectedSubmissionIndex === 'number' &&
+                      typeof selectedSubmissionWordIndex === 'number'
+                    ) {
+                      const newSubmissions = [...history]
+                      const submissionArray =
+                        newSubmissions[selectedSubmissionIndex]
+                      if (
+                        submissionArray?.[selectedSubmissionWordIndex] !==
+                          undefined &&
+                        submissionArray[selectedSubmissionWordIndex] !==
+                          undefined
+                      ) {
+                        const submission =
+                          submissionArray[selectedSubmissionWordIndex]
+                        if (submission) {
+                          submission.color = color
+                        }
+                      }
+                      setHistory(newSubmissions)
+                      setSelectedSubmissionWordPosition(null)
+                      setShowSetColorModal(false)
+                    }
+                  }}
+                >
+                  {color}
+                </button>
+              )
+            )}
+          </ul>
         </Modal>
       </Main>
     </Layout>
