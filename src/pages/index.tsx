@@ -231,14 +231,14 @@ export default function Home() {
                 setShowDeleteHistoryModal(true)
               }}
               className='disabled:pointer-events-none disabled:opacity-25'
-              disabled={history.length === 0}
+              disabled={history?.length === 0}
             >
               <TrashIcon className='h-6 w-6 text-red-700' />
             </button>
           </div>
           {history?.length > 0 && (
             <ul className='grid w-full gap-4'>
-              {history.map((submission, submissionIndex) => (
+              {history?.map((submission, submissionIndex) => (
                 <ul
                   key={submissionIndex}
                   className='grid w-full grid-cols-4 gap-4'
