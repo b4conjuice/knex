@@ -1,5 +1,6 @@
 import type { Dispatch, SetStateAction } from 'react'
 import { Fragment } from 'react'
+import classNames from 'classnames'
 import { Dialog, Transition } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/solid'
 
@@ -7,11 +8,13 @@ export default function Modal({
   isOpen,
   setIsOpen,
   title,
+  isFullScreen = true,
   children,
 }: {
   isOpen: boolean
   setIsOpen: Dispatch<SetStateAction<boolean>>
   title?: string
+  isFullScreen?: boolean
   children: React.ReactNode
 }) {
   return (
@@ -31,7 +34,7 @@ export default function Modal({
           <div className='bg-cobalt/90 fixed inset-0' />
         </Transition.Child>
         <Transition.Child
-          className='flex h-full flex-col'
+          className={classNames(isFullScreen && 'h-full', 'flex flex-col')}
           enter='duration-300 ease-out'
           enterFrom='opacity-0 scale-95'
           enterTo='opacity-100 scale-100'
@@ -39,7 +42,12 @@ export default function Modal({
           leaveFrom='opacity-100 scale-100'
           leaveTo='opacity-0 scale-95'
         >
-          <Dialog.Panel className='dark:bg-cb-dusty-blue relative z-10 flex flex-grow flex-col rounded-lg p-4 dark:text-gray-100'>
+          <Dialog.Panel
+            className={classNames(
+              isFullScreen && 'flex-grow',
+              'dark:bg-cb-dusty-blue relative z-10 flex flex-col rounded-lg p-4 dark:text-gray-100'
+            )}
+          >
             <button
               type='button'
               onClick={() => setIsOpen(false)}

@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { Main, Title } from '@bacondotbuild/ui'
+import { Main } from '@bacondotbuild/ui'
 import {
   ArrowsUpDownIcon,
   CheckCircleIcon,
   Cog6ToothIcon,
+  TrashIcon,
 } from '@heroicons/react/24/solid'
 import classNames from 'classnames'
 import {
@@ -81,6 +82,7 @@ export default function Home() {
     'knex-selectedWords',
     []
   )
+  const [history, setHistory] = useLocalStorage<string[][]>('knex-history', [])
   const selectWord = (selectedWord: string) => {
     const selectedWordIndex = selectedWords.findIndex(s => s === selectedWord)
     if (selectedWordIndex > -1) {
@@ -91,8 +93,9 @@ export default function Home() {
       setSelectedWords([...selectedWords, selectedWord])
     }
   }
-  const [showModal, setShowModal] = useState(false)
-  const [isSortMode, setIsSortMode] = useState(false)
+  const [showSettingsModal, setShowSettingsModal] = useState(false)
+  const [showDeleteHistoryModal, setShowDeleteHistoryModal] = useState(false)
+  const [isSortMode, setIsSortMode] = useState(true)
   const items = savedWords || []
 
   const sensors = useSensors(
@@ -121,19 +124,48 @@ export default function Home() {
 
   return (
     <Layout>
-      <Main className='flex flex-col p-4'>
-        <div className='flex justify-end space-x-4'>
-          <button
-            type='button'
-            onClick={() => {
-              setShowModal(true)
-            }}
-          >
-            <Cog6ToothIcon className='h-6 w-6' />
-          </button>
+      <Main className='flex flex-col space-y-4 p-4'>
+        <div className='flex justify-between space-x-4'>
+          <h1 className='text-cb-light-blue font-bold tracking-wider'>knex</h1>
+          <div className='space-x-4'>
+            <label
+              htmlFor='checked'
+              className='inline-flex cursor-pointer items-center justify-center space-x-1'
+            >
+              <span className={isSortMode ? 'text-cb-yellow' : ''}>
+                <ArrowsUpDownIcon className='h-6 w-6' />
+              </span>
+              <span className='relative'>
+                <span className='block h-6 w-10 rounded-full bg-gray-400 shadow-inner' />
+                <span
+                  className={`focus-within:shadow-outline bg-cb-yellow absolute inset-y-0 left-0 ml-1 mt-1 block h-4 w-4 rounded-full shadow transition-transform duration-300 ease-in-out ${
+                    !isSortMode ? 'translate-x-full transform' : ''
+                  }`}
+                >
+                  <input
+                    id='checked'
+                    type='checkbox'
+                    checked
+                    onChange={() => setIsSortMode(!isSortMode)}
+                    className='absolute h-0 w-0 opacity-0'
+                  />
+                </span>
+              </span>
+              <span className={!isSortMode ? 'text-cb-yellow' : ''}>
+                <CheckCircleIcon className='h-6 w-6' />
+              </span>
+            </label>
+            <button
+              type='button'
+              onClick={() => {
+                setShowSettingsModal(true)
+              }}
+            >
+              <Cog6ToothIcon className='h-6 w-6' />
+            </button>
+          </div>
         </div>
         <div className='flex flex-grow flex-col items-center space-y-4'>
-          <Title>knex</Title>
           <DndContext
             sensors={sensors}
             collisionDetection={closestCenter}
@@ -178,34 +210,7 @@ export default function Home() {
               )}
             </SortableContext>
           </DndContext>
-          <label
-            htmlFor='checked'
-            className='inline-flex w-full cursor-pointer items-center justify-center space-x-3'
-          >
-            <span className={isSortMode ? 'text-cb-yellow' : ''}>
-              <ArrowsUpDownIcon className='h-6 w-6' />
-            </span>
-            <span className='relative'>
-              <span className='block h-6 w-10 rounded-full bg-gray-400 shadow-inner' />
-              <span
-                className={`focus-within:shadow-outline bg-cb-yellow absolute inset-y-0 left-0 ml-1 mt-1 block h-4 w-4 rounded-full shadow transition-transform duration-300 ease-in-out ${
-                  !isSortMode ? 'translate-x-full transform' : ''
-                }`}
-              >
-                <input
-                  id='checked'
-                  type='checkbox'
-                  checked
-                  onChange={() => setIsSortMode(!isSortMode)}
-                  className='absolute h-0 w-0 opacity-0'
-                />
-              </span>
-            </span>
-            <span className={!isSortMode ? 'text-cb-yellow' : ''}>
-              <CheckCircleIcon className='h-6 w-6' />
-            </span>
-          </label>
-          {selectedWords?.length > 0 && (
+          {/* {selectedWords?.length > 0 && (
             <ul className='grid w-full grid-cols-4 gap-4'>
               {selectedWords.map((word, index) => (
                 <div
@@ -214,6 +219,39 @@ export default function Home() {
                 >
                   {word}
                 </div>
+              ))}
+            </ul>
+          )} */}
+
+          <div className='flex w-full justify-between'>
+            <h2>history</h2>
+            <button
+              type='button'
+              onClick={() => {
+                setShowDeleteHistoryModal(true)
+              }}
+              className='disabled:pointer-events-none disabled:opacity-25'
+              disabled={history.length === 0}
+            >
+              <TrashIcon className='h-6 w-6 text-red-700' />
+            </button>
+          </div>
+          {history?.length > 0 && (
+            <ul className='grid w-full gap-4'>
+              {history.map((submission, submissionIndex) => (
+                <ul
+                  key={submissionIndex}
+                  className='grid w-full grid-cols-4 gap-4'
+                >
+                  {submission.map((word, index) => (
+                    <div
+                      key={index}
+                      className='max-w-xs flex-col gap-4 rounded-xl bg-white/10 px-2 py-4 text-center text-white'
+                    >
+                      {word}
+                    </div>
+                  ))}
+                </ul>
               ))}
             </ul>
           )}
@@ -234,16 +272,40 @@ export default function Home() {
           <Button
             disabled={selectedWords?.length !== MAX_SELECTED_WORDS}
             className='disabled:pointer-events-none disabled:opacity-25'
+            onClick={() => {
+              setHistory([selectedWords, ...history])
+              setSelectedWords([])
+            }}
           >
             submit
           </Button>
         </div>
-        <Modal isOpen={showModal} setIsOpen={setShowModal} title='settings'>
+        <Modal
+          isOpen={showSettingsModal}
+          setIsOpen={setShowSettingsModal}
+          title='settings'
+        >
           <textarea
             className='bg-cobalt w-full flex-grow p-4'
             value={(savedWords || []).join('\n')}
             onChange={e => setSavedWords(e.target.value.split('\n'))}
           />
+        </Modal>
+        <Modal
+          isOpen={showDeleteHistoryModal}
+          setIsOpen={setShowDeleteHistoryModal}
+          title='delete history?'
+          isFullScreen={false}
+        >
+          <Button
+            onClick={() => {
+              setHistory([])
+              setShowDeleteHistoryModal(false)
+            }}
+            backgroundColorClassName='bg-red-700'
+          >
+            <TrashIcon className='h-6 w-full' />
+          </Button>
         </Modal>
       </Main>
     </Layout>

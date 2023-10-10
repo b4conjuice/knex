@@ -9,6 +9,7 @@ export default function Button({
   type,
   disabled,
   textSizeClassName = 'text-lg',
+  backgroundColorClassName = 'bg-[#5a3e84]',
   children,
 }: {
   className?: string
@@ -17,6 +18,7 @@ export default function Button({
   type?: 'button' | 'submit' | 'reset' | undefined
   disabled?: boolean
   textSizeClassName?: string
+  backgroundColorClassName?: string
   children?: React.ReactNode
 }) {
   if (href) {
@@ -34,7 +36,12 @@ export default function Button({
         )}
         {...anchorProps}
       >
-        <span className='block translate-y-[-4px] transform rounded-lg bg-[#5a3e84] p-3 duration-[600ms] ease-[cubic-bezier(.3,.7,.4,1)] hover:ease-[cubic-bezier(.3,.7,.4,1.5)] group-hover:translate-y-[-6px] group-hover:duration-[250ms] group-active:translate-y-[-2px] group-active:duration-[34ms]'>
+        <span
+          className={classnames(
+            backgroundColorClassName,
+            'block translate-y-[-4px] transform rounded-lg p-3 duration-[600ms] ease-[cubic-bezier(.3,.7,.4,1)] hover:ease-[cubic-bezier(.3,.7,.4,1.5)] group-hover:translate-y-[-6px] group-hover:duration-[250ms] group-active:translate-y-[-2px] group-active:duration-[34ms]'
+          )}
+        >
           {children}
         </span>
       </a>
@@ -54,7 +61,12 @@ export default function Button({
       )}
       {...buttonProps}
     >
-      <span className='block translate-y-[-4px] transform rounded-lg bg-[#5a3e84] p-3 duration-[600ms] ease-[cubic-bezier(.3,.7,.4,1)] hover:ease-[cubic-bezier(.3,.7,.4,1.5)] group-hover:translate-y-[-6px] group-hover:duration-[250ms] group-active:translate-y-[-2px] group-active:duration-[34ms]'>
+      <span
+        className={classnames(
+          backgroundColorClassName,
+          'block translate-y-[-4px] transform rounded-lg p-3 duration-[600ms] ease-[cubic-bezier(.3,.7,.4,1)] hover:ease-[cubic-bezier(.3,.7,.4,1.5)] group-hover:translate-y-[-6px] group-hover:duration-[250ms] group-active:translate-y-[-2px] group-active:duration-[34ms]'
+        )}
+      >
         {children}
       </span>
     </button>
