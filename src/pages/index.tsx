@@ -148,6 +148,29 @@ export default function Home() {
       ? selectedSubmission[selectedSubmissionWordIndex]
       : null
 
+  const setColor = (color: string) => {
+    if (
+      history?.length > 0 &&
+      typeof selectedSubmissionIndex === 'number' &&
+      typeof selectedSubmissionWordIndex === 'number'
+    ) {
+      const newSubmissions = [...history]
+      const submissionArray = newSubmissions[selectedSubmissionIndex]
+      if (
+        submissionArray?.[selectedSubmissionWordIndex] !== undefined &&
+        submissionArray[selectedSubmissionWordIndex] !== undefined
+      ) {
+        const submission = submissionArray[selectedSubmissionWordIndex]
+        if (submission) {
+          submission.color = color
+        }
+      }
+      setHistory(newSubmissions)
+      setSelectedSubmissionWordPosition(null)
+      setShowSetColorModal(false)
+    }
+  }
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -383,7 +406,11 @@ export default function Home() {
         <Modal
           isOpen={showSetColorModal}
           setIsOpen={setShowSetColorModal}
-          title={`set color of ${selectedSubmissionWord?.word}`}
+          title={
+            selectedSubmissionWord?.word
+              ? `set color of '${selectedSubmissionWord?.word}'`
+              : ''
+          }
           isFullScreen={false}
         >
           <ul className='grid w-full grid-cols-4 gap-4'>
@@ -396,30 +423,7 @@ export default function Home() {
                     'gap-4 rounded-xl bg-white/10 px-2 py-4 text-center text-white'
                   )}
                   onClick={() => {
-                    if (
-                      history?.length > 0 &&
-                      typeof selectedSubmissionIndex === 'number' &&
-                      typeof selectedSubmissionWordIndex === 'number'
-                    ) {
-                      const newSubmissions = [...history]
-                      const submissionArray =
-                        newSubmissions[selectedSubmissionIndex]
-                      if (
-                        submissionArray?.[selectedSubmissionWordIndex] !==
-                          undefined &&
-                        submissionArray[selectedSubmissionWordIndex] !==
-                          undefined
-                      ) {
-                        const submission =
-                          submissionArray[selectedSubmissionWordIndex]
-                        if (submission) {
-                          submission.color = color
-                        }
-                      }
-                      setHistory(newSubmissions)
-                      setSelectedSubmissionWordPosition(null)
-                      setShowSetColorModal(false)
-                    }
+                    setColor(color)
                   }}
                 >
                   {color}
@@ -427,6 +431,16 @@ export default function Home() {
               )
             )}
           </ul>
+          <button
+            className={classNames(
+              'gap-4 rounded-xl bg-white/10 px-2 py-4 text-center text-white'
+            )}
+            onClick={() => {
+              setColor('')
+            }}
+          >
+            reset
+          </button>
         </Modal>
       </Main>
     </Layout>
