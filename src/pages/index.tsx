@@ -30,6 +30,16 @@ import Modal from '@/components/modal'
 import Button from '@/components/button'
 import useLocalStorage from '@/lib/useLocalStorage'
 
+const shuffle = (array: string[]) => {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    const temp = array[i]
+    array[i] = array[j]!
+    array[j] = temp!
+  }
+  return array
+}
+
 const defaultWords = [
   'central',
   'critical',
@@ -310,7 +320,14 @@ export default function Home() {
           )}
         </div>
         <div className='flex justify-evenly gap-4'>
-          <Button>shuffle</Button>
+          <Button
+            type='button'
+            onClick={() => {
+              setSavedWords(shuffle([...savedWords]))
+            }}
+          >
+            shuffle
+          </Button>
           <Button
             type='button'
             onClick={() => {
