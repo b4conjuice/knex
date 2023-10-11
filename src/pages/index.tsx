@@ -110,6 +110,40 @@ export default function Home() {
     'knex-history',
     []
   )
+  const submissionsByColor = history?.map(submissions =>
+    submissions.map(({ color }) => color)
+  )
+  const submissionsAsSolved = submissionsByColor?.map(submissions => {
+    const colorCountsObject = submissions.reduce(
+      (prev: Record<string, number | undefined>, color) => {
+        const key = color === '' ? 'unset' : color
+        if (typeof prev?.[key] === 'number' && prev?.[key] !== undefined) {
+          prev[key] = (prev[key] ?? 0) + 1
+        } else {
+          prev[key] = 1
+        }
+        return prev
+      },
+      {}
+    )
+    const colorCounts = Object.values(colorCountsObject)
+    const dedupedSubmissions = [...new Set(submissions)]
+    const isSolved =
+      colorCounts.length === 1 &&
+      colorCounts[0] === 4 &&
+      dedupedSubmissions[0] !== ''
+    return isSolved ? dedupedSubmissions[0] : isSolved
+  })
+  const solvedWords: Map = history
+    ?.filter((submissions, index) => {
+      const isSolved = submissionsAsSolved[index]
+      return isSolved
+    })
+    .flat()
+    .reduce((prev: Map, curr) => {
+      prev[curr.word] = curr.color
+      return prev
+    }, {})
   const selectWord = (selectedWord: string) => {
     const selectedWordIndex = selectedWords.findIndex(s => s === selectedWord)
     if (selectedWordIndex > -1) {
@@ -249,36 +283,53 @@ export default function Home() {
                 <ul className='grid w-full grid-cols-4 gap-4'>
                   {items
                     .map(item => ({ id: item, item }))
-                    .map((item, index) => (
-                      <SortableItem key={item.id} id={item.id}>
-                        <div
-                          key={index}
-                          className='flex-col gap-4 rounded-xl border border-white/10 bg-white/10 px-2 py-4 text-center text-white'
-                        >
-                          {item.item}
-                        </div>
-                      </SortableItem>
-                    ))}
+                    .map((item, index) => {
+                      const solvedColor = solvedWords[item.item]
+                      const solvedBackgroundColorClass = solvedColor
+                        ? colorToBackgroundColorClass[solvedColor]
+                        : 'bg-white/10'
+                      return (
+                        <SortableItem key={item.id} id={item.id}>
+                          <div
+                            key={index}
+                            className={classNames(
+                              solvedBackgroundColorClass,
+                              'flex-col gap-4 rounded-xl border border-white/10 px-2 py-4 text-center text-white'
+                            )}
+                          >
+                            {item.item}
+                          </div>
+                        </SortableItem>
+                      )
+                    })}
                 </ul>
               ) : (
                 <ul className='grid w-full grid-cols-4 gap-4'>
-                  {items.map((item, index) => (
-                    <button
-                      key={index}
-                      className={classNames(
-                        selectedWords.includes(item)
-                          ? 'border-cb-yellow'
-                          : 'border-white/10',
-                        'gap-4 rounded-xl border bg-white/10 px-2 py-4 text-center text-white'
-                      )}
-                      type='button'
-                      onClick={() => {
-                        selectWord(item)
-                      }}
-                    >
-                      {item}
-                    </button>
-                  ))}
+                  {items.map((item, index) => {
+                    const solvedColor = solvedWords[item]
+                    const solvedBackgroundColorClass = solvedColor
+                      ? colorToBackgroundColorClass[solvedColor]
+                      : 'bg-white/10'
+                    return (
+                      <button
+                        key={index}
+                        className={classNames(
+                          solvedBackgroundColorClass,
+                          selectedWords.includes(item)
+                            ? 'border-cb-yellow'
+                            : 'border-white/10',
+                          'gap-4 rounded-xl border bg-white/10 px-2 py-4 text-center text-white'
+                        )}
+                        type='button'
+                        onClick={() => {
+                          selectWord(item)
+                        }}
+                        disabled={!!solvedColor}
+                      >
+                        {item}
+                      </button>
+                    )
+                  })}
                 </ul>
               )}
             </SortableContext>
