@@ -311,23 +311,24 @@ export default function Home() {
                       ? colorToBackgroundColorClass[solvedColor]
                       : 'bg-white/10'
                     return (
-                      <button
-                        key={index}
-                        className={classNames(
-                          solvedBackgroundColorClass,
-                          selectedWords.includes(item)
-                            ? 'border-cb-yellow'
-                            : 'border-white/10',
-                          'gap-4 rounded-xl border px-2 py-4 text-center text-white'
-                        )}
-                        type='button'
-                        onClick={() => {
-                          selectWord(item)
-                        }}
-                        disabled={!!solvedColor}
-                      >
-                        {item}
-                      </button>
+                      <li key={index}>
+                        <button
+                          className={classNames(
+                            solvedBackgroundColorClass,
+                            selectedWords.includes(item)
+                              ? 'border-cb-yellow'
+                              : 'border-white/10',
+                            'w-full gap-4 rounded-xl border px-2 py-4 text-center text-white'
+                          )}
+                          type='button'
+                          onClick={() => {
+                            selectWord(item)
+                          }}
+                          disabled={!!solvedColor}
+                        >
+                          {item}
+                        </button>
+                      </li>
                     )
                   })}
                 </ul>
@@ -368,25 +369,26 @@ export default function Home() {
                   className='grid w-full grid-cols-4 gap-4'
                 >
                   {submission.map((word, index) => (
-                    <button
-                      key={index}
-                      className={classNames(
-                        word.color
-                          ? colorToBackgroundColorClass[word.color]
-                          : 'bg-white/10',
-                        'rounded-xl px-2 py-4 text-center text-white'
-                      )}
-                      type='button'
-                      onClick={() => {
-                        setSelectedSubmissionWordPosition([
-                          submissionIndex,
-                          index,
-                        ])
-                        setShowSetColorModal(true)
-                      }}
-                    >
-                      {word.word}
-                    </button>
+                    <li key={index}>
+                      <button
+                        className={classNames(
+                          word.color
+                            ? colorToBackgroundColorClass[word.color]
+                            : 'bg-white/10',
+                          'w-full rounded-xl px-2 py-4 text-center text-white'
+                        )}
+                        type='button'
+                        onClick={() => {
+                          setSelectedSubmissionWordPosition([
+                            submissionIndex,
+                            index,
+                          ])
+                          setShowSetColorModal(true)
+                        }}
+                      >
+                        {word.word}
+                      </button>
+                    </li>
                   ))}
                 </ul>
               ))}
@@ -467,18 +469,19 @@ export default function Home() {
           <ul className='grid w-full grid-cols-4 gap-4'>
             {Object.entries(colorToBackgroundColorClass).map(
               ([color, backgroundColorClass]) => (
-                <button
-                  key={color}
-                  className={classNames(
-                    backgroundColorClass,
-                    'gap-4 rounded-xl px-2 py-4 text-center text-white'
-                  )}
-                  onClick={() => {
-                    setColor(color)
-                  }}
-                >
-                  {color}
-                </button>
+                <li key={color}>
+                  <button
+                    className={classNames(
+                      backgroundColorClass,
+                      'w-full gap-4 rounded-xl px-2 py-4 text-center text-white'
+                    )}
+                    onClick={() => {
+                      setColor(color)
+                    }}
+                  >
+                    {color}
+                  </button>
+                </li>
               )
             )}
           </ul>
