@@ -318,7 +318,7 @@ export default function Home() {
                           selectedWords.includes(item)
                             ? 'border-cb-yellow'
                             : 'border-white/10',
-                          'gap-4 rounded-xl border bg-white/10 px-2 py-4 text-center text-white'
+                          'gap-4 rounded-xl border px-2 py-4 text-center text-white'
                         )}
                         type='button'
                         onClick={() => {
