@@ -233,7 +233,7 @@ export default function Home() {
     <Layout>
       <Main className='flex flex-col space-y-4 p-4'>
         <div className='flex justify-between space-x-4'>
-          <h1 className='text-cb-light-blue font-bold tracking-wider'>knex</h1>
+          <h1 className='font-bold tracking-wider text-cb-light-blue'>knex</h1>
           <div className='space-x-4'>
             <label
               htmlFor='checked'
@@ -245,7 +245,7 @@ export default function Home() {
               <span className='relative'>
                 <span className='block h-6 w-10 rounded-full bg-gray-400 shadow-inner' />
                 <span
-                  className={`focus-within:shadow-outline bg-cb-yellow absolute inset-y-0 left-0 ml-1 mt-1 block h-4 w-4 rounded-full shadow transition-transform duration-300 ease-in-out ${
+                  className={`focus-within:shadow-outline absolute inset-y-0 left-0 ml-1 mt-1 block h-4 w-4 rounded-full bg-cb-yellow shadow transition-transform duration-300 ease-in-out ${
                     !isSortMode ? 'translate-x-full transform' : ''
                   }`}
                 >
@@ -433,7 +433,7 @@ export default function Home() {
           title='settings'
         >
           <textarea
-            className='bg-cobalt w-full flex-grow p-4'
+            className='w-full flex-grow bg-cobalt p-4'
             value={(savedWords || []).join('\n')}
             onChange={e => setSavedWords(e.target.value.split('\n'))}
           />
@@ -471,7 +471,7 @@ export default function Home() {
                   key={color}
                   className={classNames(
                     backgroundColorClass,
-                    'gap-4 rounded-xl bg-white/10 px-2 py-4 text-center text-white'
+                    'gap-4 rounded-xl px-2 py-4 text-center text-white'
                   )}
                   onClick={() => {
                     setColor(color)
